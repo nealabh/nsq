@@ -1,10 +1,28 @@
-FROM alpine:3.4
+#
+# NSQ Dockerfile
+#
+# https://github.com/dockerfile/nsq
+#
 
-EXPOSE 4150 4151 4160 4161 4170 4171
+# Pull base image.
+FROM dockerfile/ubuntu
 
-VOLUME /data
-VOLUME /etc/ssl/certs
+# Install NSQ.
+RUN \
+  mkdir -p /tmp/nsq && \
+  wget https://s3.amazonaws.com/bitly-downloads/nsq/nsq-1.0.0-compat.darwin-amd64.go1.8.tar.gz -O - | tar -xvz --strip=1 -C /tmp/nsq && \
+  mv /tmp/nsq/bin/* /usr/local/bin/ && \
+  rm -rf /tmp/nsq
 
-COPY dist/docker/bin/ /usr/local/bin/
-RUN ln -s /usr/local/bin/*nsq* / \
-    && ln -s /usr/local/bin/*nsq* /bin/
+# Define working directory.
+WORKDIR /data
+
+# Define default command.
+CMD ["bash"]
+
+# Expose ports.
+EXPOSE 4150
+EXPOSE 4151
+EXPOSE 4160
+EXPOSE 4161
+EXPOSE 4171
